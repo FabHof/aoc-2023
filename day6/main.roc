@@ -6,13 +6,10 @@ app "AoC"
 
 main : Task {} *
 main =
-    dbg
-        P1 (part1 example)
+    p1 = (part1 input)
+    p2 = (part2 input)
 
-    dbg
-        P2 (part2 example)
-
-    Stdout.line "done"
+    Stdout.line "P1: \(p1 |> Num.toStr) P2: \(p2 |> Num.toStr)"
 
 part1 = \str ->
     { before, after } = 
@@ -22,12 +19,29 @@ part1 = \str ->
     distances = after |> numbers
     races = List.map2 times distances Race
     List.map races countWinningTimes
+        |> List.product
+
+part2 = \str ->
+    { before, after } = 
+        Str.splitFirst str "\n" 
+        |> unwrap
+    time = before |> number
+    distance = after |> number
+    countWinningTimes (Race time distance)
 
 countWinningTimes = \ (Race time distance) ->
-    lower = time / 2 - Num.sqrt (time*time / 4 - distance)
-    upper = time / 2 + Num.sqrt (time*time / 4 - distance)
-    Num.round 34.32f32
+    lower = time / 2 - Num.sqrt (time*time / 4 - distance) + 1 |> Num.floor
+    upper = time / 2 + Num.sqrt (time*time / 4 - distance) - 1 |> Num.ceiling
+    upper - lower + 1
     
+
+number = \str ->
+    Str.splitFirst str ": "
+    |> unwrap
+    |> .after
+    |> Str.replaceEach " " ""
+    |> Str.toF64
+    |> unwrap
 
 numbers = \str ->
     Str.splitFirst str ": "
@@ -36,8 +50,6 @@ numbers = \str ->
     |> Str.split " "
     |> List.keepOks Str.toF64
 
-part2 = \str ->
-    X
 example : Str
 example =
     """
