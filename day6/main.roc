@@ -6,34 +6,33 @@ app "AoC"
 
 main : Task {} *
 main =
-    p1 = (part1 input)
-    p2 = (part2 input)
+    p1 = part1 input
+    p2 = part2 input
 
     Stdout.line "P1: \(p1 |> Num.toStr) P2: \(p2 |> Num.toStr)"
 
 part1 = \str ->
-    { before, after } = 
-        Str.splitFirst str "\n" 
+    { before, after } =
+        Str.splitFirst str "\n"
         |> unwrap
     times = before |> numbers
     distances = after |> numbers
     races = List.map2 times distances Race
     List.map races countWinningTimes
-        |> List.product
+    |> List.product
 
 part2 = \str ->
-    { before, after } = 
-        Str.splitFirst str "\n" 
+    { before, after } =
+        Str.splitFirst str "\n"
         |> unwrap
     time = before |> number
     distance = after |> number
     countWinningTimes (Race time distance)
 
-countWinningTimes = \ (Race time distance) ->
-    lower = time / 2 - Num.sqrt (time*time / 4 - distance) + 1 |> Num.floor
-    upper = time / 2 + Num.sqrt (time*time / 4 - distance) - 1 |> Num.ceiling
+countWinningTimes = \Race time distance ->
+    lower = time / 2 - Num.sqrt (time * time / 4 - distance) + 1 |> Num.floor
+    upper = time / 2 + Num.sqrt (time * time / 4 - distance) - 1 |> Num.ceiling
     upper - lower + 1
-    
 
 number = \str ->
     Str.splitFirst str ": "
