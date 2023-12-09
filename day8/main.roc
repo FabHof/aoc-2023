@@ -22,14 +22,13 @@ part2 = \str ->
         Dict.keys network
         |> List.keepIf \s -> Str.endsWith s "A"
         |> List.map (\s -> solve (\p -> Str.endsWith p "Z") instructions network { steps: 0, pos: s, done: Bool.false })
-    # |> List.map (\s -> (s, 1, s))
     stepsToGoal |> lcmList
 
 lcmList = \list ->
     when list is
         [] -> 1
         [x] -> x
-        [x, ..] -> lcm x (lcmList (List.dropAt list 0))
+        [x, .. as rest] -> lcm x (lcmList rest)
 
 lcm = \a, b ->
     (a * b) // (gcd a b)
@@ -102,9 +101,6 @@ unwrap = \res ->
     when res is
         Ok x -> x
         Err _ ->
-            dbg
-                res
-
             crash "bad unwrap"
 
 debug = \x ->
