@@ -15,28 +15,30 @@ solve = \str ->
         |> List.findFirstIndex \c -> c == 'S'
         |> unwrap
     # Down works for both the example and my input.
-    field = str |> Str.toUtf8  |> List.map \c -> { region: Unknown, char: c }
+    field = str |> Str.toUtf8 |> List.map \c -> { region: Unknown, char: c }
     fieldWithPipe = walkPipe field startPos Down width 0
 
-    dbg P1 ((List.countIf fieldWithPipe (\cell -> cell.region == Pipe)) // 2)
+    dbg
+        P1 ((List.countIf fieldWithPipe (\cell -> cell.region == Pipe)) // 2)
 
     getPipesToRight = \index ->
         List.walkFromUntil
             fieldWithPipe
             (index + 1)
-            { count: 0, lastC: ' '}
+            { count: 0, lastC: ' ' }
             \state, cell ->
                 if cell.char == '\n' then
                     Break state
                 else if cell.region == Pipe then
                     if cell.char == '|' then
-                        Continue {state & count: state.count + 1}
+                        Continue { state & count: state.count + 1 }
                     else if cell.char == 'F' || cell.char == 'L' then
-                        Continue {state & lastC: cell.char}
+                        Continue { state & lastC: cell.char }
                     else if cell.char == '7' || cell.char == 'J' then
-                        shouldAdd = (cell.char == '7' && state.lastC == 'L')
+                        shouldAdd =
+                            (cell.char == '7' && state.lastC == 'L')
                             || (cell.char == 'J' && state.lastC == 'F')
-                        Continue {state & lastC: ' ', count: if shouldAdd then state.count + 1 else state.count}
+                        Continue { state & lastC: ' ', count: if shouldAdd then state.count + 1 else state.count }
                     else
                         Continue state
                 else
@@ -52,7 +54,9 @@ solve = \str ->
             else
                 count + 1
 
-    dbg P2 (List.walkWithIndex fieldWithPipe 0 countIfInside)
+    dbg
+        P2 (List.walkWithIndex fieldWithPipe 0 countIfInside)
+
     "Done"
 
 walkPipe = \field, position, direction, fieldWidth, stepcount ->
