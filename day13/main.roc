@@ -6,17 +6,16 @@ app "AoC"
 
 main : Task {} *
 main =
-    # dbg
-    #     part1 input
-    dbg
-        part2 input
+    _ <- part1 input |> Num.toStr |> Stdout.line |> Task.await
+    part2 input |> Num.toStr |> Stdout.line
 
-    Stdout.line "Done"
-
-# part1 = \str ->
-#     Str.split str "\n\n"
-#     |> List.map toReflectionNumber
-#     |> List.sum
+part1 = \str ->
+    Str.split str "\n\n"
+    |> List.map (\p -> 
+        when toReflectionNumber p is 
+            One n -> n
+            _ -> crash "invalid input")
+    |> List.sum
 
 part2 = \str ->
     Str.split str "\n\n"
