@@ -6,11 +6,7 @@ app "AoC"
 
 main : Task {} *
 main =
-    # dbg
-    #     part1 input
-
-    foo = part2 example
-    dbg foo
+    _ = part2 example
 
     Stdout.line "Ok"
 
@@ -70,10 +66,12 @@ calcFieldUntilConstant = \f, maxX, maxY, i->
         |> south maxX maxY
         |> east maxX maxY
     if f.boulders == newField.boulders then
-        dbg FOUND
+        # BUG: f.boulders should not even equal f.boulders
+        dbg f.boulders
+        dbg newField.boulders
+        dbg newField.boulders # BUG: This line returns something different than the line above
         newField.boulders
     else
-        dbg NEXT
         calcFieldUntilConstant newField maxX maxY (i +  1)
     
 north = \field, maxX ->
