@@ -6,11 +6,8 @@ app "AoC"
 
 main : Task {} *
 main =
-    dbg part1 input
-
-    dbg part2 input
-
-    Stdout.line "Ok"
+    _ <- part1 input |> Num.toStr |> Stdout.line |> Task.await
+    part2 input |> Num.toStr |> Stdout.line
 
 part1 = \str ->
     Str.split str "," |> List.map Str.toUtf8 |> List.map toHash |> List.sum
@@ -20,14 +17,22 @@ part2 = \str ->
     |> List.walk (List.repeat [] 256) fillHashMap
     |> List.map
         (\innerList ->
-            List.walkWithIndex innerList 0 (\sum, (_, v), index -> sum + (index + 1) * (Num.toNat v)))
+            List.walkWithIndex
+                innerList
+                0
+                (\sum, (_, v), index ->
+                    sum + (index + 1) * (Num.toNat v)))
     |> List.walkWithIndex 0 (\sum, box, index -> sum + (index + 1) * box)
 
 fillHashMap = \list, item ->
     key = Str.toUtf8 item |> List.keepIf (\c -> c >= 'a' && c <= 'z')
     hash = key |> toHash
     if Str.toUtf8 item |> List.get (List.len key) |> unwrap == '-' then
-        List.update list hash (\innerList -> List.dropIf innerList (\(k, _) -> k == key))
+        List.update
+            list
+            hash
+            (\innerList ->
+                List.dropIf innerList (\(k, _) -> k == key))
     else
         val = Str.toUtf8 item |> List.get (List.len key |> Num.add 1) |> unwrap |> Num.sub '0'
         innerList = List.get list hash |> unwrap
@@ -43,8 +48,7 @@ toHash = \str ->
         str
         0
         (\val, char ->
-            foo = ((val + (char |> Num.toNat)) * 17)
-            foo % 256
+            ((val + (char |> Num.toNat)) * 17) % 256
         )
 
 example =
